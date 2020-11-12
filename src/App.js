@@ -7,7 +7,6 @@ import {
   ApolloProvider,
   useQuery,
 } from "@apollo/client";
-import Launch from "./Components/Launch.jsx";
 
 const client = new ApolloClient({
   uri: "https://api.spacex.land/graphql",
@@ -42,7 +41,7 @@ const GetLaunches = () => {
       <h5>Launch: #{launch.id}</h5>
       <p>{launch.details}</p>
       <p>Rocket: {launch.rocket.rocket_name}</p>
-      <a href={launch.links.video_link}>Youtube Link</a>
+      <a href={launch.links.video_link}>Youtube</a>
     </div>
   ));
 };
