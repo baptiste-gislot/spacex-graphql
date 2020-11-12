@@ -1,24 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+/* eslint-disable react-hooks/rules-of-hooks */
+import "./App.css";
+import {
+  ApolloClient,
+  InMemoryCache,
+  gql,
+  ApolloProvider,
+  useQuery,
+} from "@apollo/client";
+import Launch from "./Components/Launch.jsx";
+
+const client = new ApolloClient({
+  uri: "https://api.spacex.land/graphql",
+  cache: new InMemoryCache(),
+});
+
+const MISSIONS = gql`
+  query getFiveMissions {
+    launches(limit: 5) {
+      id
+      launch_date_utc
+      launch_success
+      rocket {
+        rocket_name
+      }
+      links {
+        video_link
+      }
+      details
+    }
+  }
+`;
+
+const GetLaunches = () => {
+  const { loading, error, data } = useQuery(MISSIONS);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  return data.launches.map((launch) => (
+    <div key={launch.id}>
+      <h5>Launch: #{launch.id}</h5>
+      <p>{launch.details}</p>
+      <p>Rocket: {launch.rocket.rocket_name}</p>
+      <a href={launch.links.video_link}>Youtube Link</a>
+    </div>
+  ));
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ApolloProvider client={client}>
+      <div className="App">
+        <GetLaunches />
+      </div>
+    </ApolloProvider>
   );
 }
 
